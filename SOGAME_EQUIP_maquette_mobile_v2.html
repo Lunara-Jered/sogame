@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SOGAME EQUIP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#ffffff;--page:#f5f6f8;--fg:#4a4a4a;--mut:#888888;--card:#ffffff;
+  --line:#e8eaed;--line-strong:#4a4a4a;--soft:#f0f2f5;
+  --yel:#fcd115;--yel-hover:#e6be00;--blue:#3b82f6;--blue-soft:#eff6ff;
+  --ok:#059669;--ok-soft:#ecfdf5;
+  --lim:#d97706;--lim-soft:#fffbeb;
+  --out:#dc2626;--out-soft:#fef2f2;
+  --radius:16px;--radius-sm:12px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.02);
+  --shadow:0 4px 12px -2px rgba(0,0,0,.06),0 2px 4px -2px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 32px -8px rgba(0,0,0,.1);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141518;--page:#0b0c0e;--fg:#e2e4e8;--mut:#9ca3af;--card:#1c1e22;
+    --line:#2d3037;--line-strong:#e2e4e8;--soft:#23262c;
+    --blue:#60a5fa;--blue-soft:#172544;
+    --ok:#34d399;--ok-soft:#0d2a1e;
+    --lim:#fbbf24;--lim-soft:#2e2510;
+    --out:#f87171;--out-soft:#3a1616;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+    --shadow:0 4px 12px -2px rgba(0,0,0,.5);
+    --shadow-lg:0 12px 32px -8px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141518;--page:#0b0c0e;--fg:#e2e4e8;--mut:#9ca3af;--card:#1c1e22;
+  --line:#2d3037;--line-strong:#e2e4e8;--soft:#23262c;
+  --blue:#60a5fa;--blue-soft:#172544;
+  --ok:#34d399;--ok-soft:#0d2a1e;
+  --lim:#fbbf24;--lim-soft:#2e2510;
+  --out:#f87171;--out-soft:#3a1616;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 4px 12px -2px rgba(0,0,0,.5);
+  --shadow-lg:0 12px 32px -8px rgba(0,0,0,.7);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+/* LE BODY CONTIENT L'IMAGE DE FOND */
+body{
+  margin:0;
+  /* METS TON IMAGE ICI */
+  background-image: url('images (1).jpg'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color:var(--fg);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* L'APPLICATION EST TRANSPARENTE POUR LAISSER VOIR LE FOND */
+.app{
+  max-width:480px;
+  min-height:100vh;
+  margin:0 auto;
+  background:transparent; /* Fond transparent au lieu de var(--bg) */
+  padding:16px 16px 120px;
+  position:relative;
+}
+
+/* ... LE RESTE DE TES STYLES (Header, Cartes, etc.) RESTE IDENTIQUE ... */
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+h1,h2,.logo-text{font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;text-transform:uppercase;margin:0;line-height:1}
+#splash{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .5s}
+#splash.off{opacity:0;pointer-events:none}
+#splash .splash-logo{width:180px;height:auto;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.97)}}
+#splash h2{color:var(--fg);font-size:1.4rem;letter-spacing:4px;font-weight:700;opacity:.7}
+.dots span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yel);margin:0 4px;animation:bl 1s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+.top{padding:4px 2px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo-img{height:52px;width:auto;display:block;cursor:pointer}
+.sb{width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);font-size:1.15rem;display:grid;place-items:center;cursor:pointer;flex:none;transition:background .15s,border-color .15s,transform .1s;box-shadow:var(--shadow-sm)}
+.sb:hover{background:var(--soft);border-color:var(--line-strong)}
+.sb:active{transform:scale(.94)}
+
+.sf{display:none;margin-bottom:18px;border:1px solid var(--line);border-radius:12px;padding:0 14px;align-items:center;gap:10px;background:var(--card);box-shadow:var(--shadow-sm)}
+.sf.on{display:flex}
+.sf svg{color:var(--mut);font-size:1.1rem}
+.sf input{flex:1;border:0;background:none;color:var(--fg);font:500 .95rem Inter,sans-serif;padding:13px 0;outline:none}
+.sf input::placeholder{color:var(--mut)}
+
+.t{font-size:1.9rem;font-weight:800;letter-spacing:.3px;margin:6px 2px 18px;display:flex;align-items:center;gap:12px;color:var(--fg)}
+.t::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.card{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;background:var(--card);cursor:pointer;width:100%;text-align:left;color:inherit;font:inherit;padding:0;box-shadow:var(--shadow-sm);transition:border-color .15s,box-shadow .15s,transform .15s}
+.card:hover{border-color:var(--line-strong);box-shadow:var(--shadow);transform:translateY(-1px)}
+.card:active{transform:scale(.995)}
+
+.ph{background:var(--soft);display:grid;place-items:center;color:var(--mut);position:relative;transition:color .2s,background .2s}
+.card .ph{flex:0 0 108px;font-size:2.4rem;border-right:1px solid var(--line)}
+.card:hover .ph{color:var(--fg);background:var(--yel);color:#111}
+
+.card .tx{padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
+.card .n{font-weight:600;font-size:1rem;letter-spacing:-.1px;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .ref{color:var(--mut);font-size:.78rem;font-weight:500;margin-top:1px}
+.card .pr{font-weight:700;font-size:1.05rem;color:var(--fg);letter-spacing:-.2px;margin-top:6px}
+.card .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+
+.more{color:var(--fg);font-size:.8rem;font-weight:600;display:inline-flex;align-items:center;gap:2px;white-space:nowrap;transition:color .15s}
+.more svg{font-size:.9rem;transition:transform .15s}
+.card:hover .more{color:var(--yel-hover)}
+.card:hover .more svg{transform:translateX(2px)}
+
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;padding:4px 9px;border-radius:6px;letter-spacing:.1px;white-space:nowrap}
+.chip::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.ok{color:var(--ok);background:var(--ok-soft)}
+.lim{color:var(--lim);background:var(--lim-soft)}
+.out{color:var(--out);background:var(--out-soft)}
+
+.empty{text-align:center;padding:56px 16px;color:var(--mut);font-size:.92rem}
+.empty svg{font-size:2.4rem;margin-bottom:14px;opacity:.4;display:block;margin-inline:auto}
+.empty strong{color:var(--fg);display:block;font-size:1rem;margin-bottom:4px}
+
+.back{border:0;background:none;color:var(--fg);font:600 .9rem Inter,sans-serif;display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:2px 0 14px;transition:gap .15s,color .15s}
+.back:hover{gap:9px;color:var(--yel-hover)}
+.back svg{font-size:1.05rem}
+
+.gal{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px 18px;padding:0 16px 4px;scrollbar-width:none}
+.gal::-webkit-scrollbar{display:none}
+.gal .ph{flex:0 0 82%;aspect-ratio:1;border-radius:var(--radius);scroll-snap-align:center;font-size:5rem;border:1px solid var(--line);background:linear-gradient(135deg,var(--soft) 0%,color-mix(in srgb,var(--soft) 40%,var(--bg)) 100%);box-shadow:var(--shadow-sm)}
+.gal .ph:first-child{color:#111;background:linear-gradient(135deg,var(--yel),var(--yel-hover))}
+.gal .ph:not(:first-child){color:var(--mut);opacity:.8}
+
+.ds{border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:16px;background:var(--card);box-shadow:var(--shadow-sm)}
+.ds h2{font-size:1.7rem;font-weight:800;letter-spacing:.2px;line-height:1.1}
+.ds .ref{color:var(--mut);font-size:.82rem;font-weight:500;margin-top:4px}
+.ds .pr{font-size:1.6rem;font-weight:700;margin:14px 0 16px;color:var(--fg);letter-spacing:-.3px}
+.ds .pr small{font-size:.65em;font-weight:600;color:var(--mut);letter-spacing:.5px;text-transform:uppercase;margin-left:4px}
+.ds p.desc{margin:0 0 16px;color:var(--mut);font-size:.92rem;line-height:1.6}
+.ds ul{padding-left:0;margin:0;list-style:none;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:16px}
+.ds ul li{position:relative;padding-left:20px;color:var(--fg);font-size:.9rem;font-weight:500}
+.ds ul li::before{content:"";position:absolute;left:0;top:.5em;width:6px;height:6px;border-radius:50%;background:var(--yel)}
+
+.stat{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:.85rem;color:var(--mut);font-weight:500}
+
+.cta{margin-top:8px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:1.5px solid var(--line-strong);background:var(--yel);color:#111;font:700 .95rem Inter,sans-serif;padding:15px;border-radius:12px;cursor:pointer;letter-spacing:.1px;transition:background .15s,transform .1s}
+.cta:hover{background:var(--yel-hover)}
+.cta:active{transform:scale(.985)}
+.cta svg{font-size:1.1rem;stroke-width:2}
+.cta.secondary{background:transparent;color:var(--fg);border:1px solid var(--line);margin-top:10px;font-weight:600}
+.cta.secondary:hover{background:var(--soft)}
+.note{font-size:.8rem;color:var(--mut);text-align:center;margin-top:12px;line-height:1.5}
+
+/* =========================================================
+   NAVIGATION MOBILE — DOCK SOMBRE + BOSSE JAUNE ACTIVE
+   ========================================================= */
+#nav{
+  position:fixed;
+  z-index:30;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(100%,480px);
+  min-height:78px;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  align-items:end;
+  padding:9px 9px calc(9px + env(safe-area-inset-bottom,0px));
+  background:rgba(31,31,35,.98);
+  border-radius:22px 22px 0 0;
+  box-shadow:0 -8px 28px rgba(0,0,0,.22);
+  isolation:isolate;
+}
+.nav-item{
+  position:relative;
+  min-width:0;
+  height:58px;
+  padding:0 2px 5px;
+  border:0;
+  border-radius:14px;
+  background:transparent;
+  color:#96969d;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  gap:4px;
+  cursor:pointer;
+  font:600 .59rem Inter,sans-serif;
+  letter-spacing:.01em;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:color .22s ease,transform .22s ease;
+}
+.nav-item svg{
+  position:relative;
+  z-index:2;
+  width:22px;
+  height:22px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),color .2s ease;
+}
+.nav-label{
+  position:relative;
+  z-index:2;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  line-height:1.1;
+  opacity:.9;
+}
+.nav-item::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  top:-17px;
+  left:50%;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  transform:translateX(-50%) scale(.55);
+  opacity:0;
+  background:var(--yel);
+  border:5px solid #1f1f23;
+  box-shadow:0 5px 13px rgba(0,0,0,.22);
+  transition:opacity .22s ease,transform .28s cubic-bezier(.2,.8,.2,1);
+}
+.nav-item.on{
+  color:#fff;
+}
+.nav-item.on::before{
+  opacity:1;
+  transform:translateX(-50%) scale(1);
+}
+.nav-item.on svg{
+  color:#151515;
+  stroke:#151515;
+  transform:translateY(-17px);
+}
+.nav-item.on .nav-label{
+  color:var(--yel);
+  opacity:1;
+}
+.nav-item:active{transform:scale(.94)}
+.nav-item:focus-visible{
+  outline:2px solid var(--yel);
+  outline-offset:2px;
+}
+.app{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+@media (max-width:360px){
+  .nav-item{font-size:.53rem}
+  .nav-item svg{width:20px;height:20px}
+  .nav-item::before{width:44px;height:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  .nav-item,.nav-item::before,.nav-item svg{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div id="splash" aria-label="Chargement">
+  <img src="logo.png" class="splash-logo" alt="Chargement SOGAME EQUIP" onerror="this.style.display='none'">
+  <h2>Chargement</h2>
+  <div class="dots"><span></span><span></span><span></span></div>
+</div>
+
+<div class="app" id="app"></div>
+
+<!-- La nav est maintenant générée dynamiquement par le JS, 
+     on s'assure juste qu'elle a la bonne structure -->
+<nav id="nav" aria-label="Catégories"></nav>
+
+<script>
+// Icônes SVG (identiques à avant)
+const SVG_ICONS = `
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="washer" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><circle cx="12" cy="14" r="4.2"/><path d="M7.5 6h.01M10.5 6h.01M14.5 6h3"/></symbol>
+<symbol id="fridge" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M6 10h12M9 5.5v2M9 13v3"/></symbol>
+<symbol id="tools" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+<symbol id="chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx=".8"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+<symbol id="bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+<symbol id="hat" viewBox="0 0 24 24"><path d="M4 16a8 8 0 0 1 16 0M2 16h20v3.5H2zM10 8.5V5h4v3.5"/></symbol>
+<symbol id="toolbox" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M3 13.5h18"/><rect x="10.5" y="11.5" width="3" height="4" rx=".6"/></symbol>
+<symbol id="screw" viewBox="0 0 24 24"><path d="M6.5 3h11M12 3v3M8.5 6h7l-1.2 14.5a2.3 2.3 0 0 1-4.6 0zM9 10h6M9.3 14h5.4"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.5-4.5"/></symbol>
+<symbol id="back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/></symbol>
+<symbol id="chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></symbol>
+</svg>
+`;
+document.body.insertAdjacentHTML('afterbegin', SVG_ICONS);
+
+const CATS={
+  electromenager:{n:"Électroménager",i:"washer"},
+  bricolage:{n:"Bricolage",i:"tools"},
+  electronique:{n:"Électronique",i:"chip"},
+  energie:{n:"Énergie",i:"bolt"},
+  chantier:{n:"Chantier",i:"hat"}
+};
+const P=[
+{id:1,c:"electromenager",n:"Machine à laver",m:"REF-WM-001",p:170000,s:"ok",i:"washer",d:"Lave-linge frontale silencieux, idéal pour un usage familial quotidien. Capacité 8 kg, essorage efficace et programmes multiples.",sp:["Capacité 8 kg","Classe énergétique A++","Vitesse d'essorage 1200 tr/min"]},
+{id:2,c:"electromenager",n:"Réfrigérateur combiné",m:"REF-RF-002",p:190000,s:"ok",i:"fridge",d:"Réfrigérateur combiné avec congélateur, conservation optimale des aliments et faible consommation énergétique.",sp:["Volume net 320 L","No Frost","Classe énergétique A+"]},
+{id:3,c:"bricolage",n:"Boîte à outils complète",m:"REF-TB-003",p:25000,s:"ok",i:"toolbox",d:"Boîte à outils professionnelle avec tous les essentiels pour les travaux du quotidien. Rangement organisé et durable.",sp:["48 pièces incluses","Boîtier renforcé","Outils acier trempé"]},
+{id:4,c:"bricolage",n:"Lot de vis et chevilles",m:"REF-SC-004",p:8000,s:"lim",i:"screw",d:"Assortiment complet de vis et chevilles pour fixations murales et assemblage. Qualité professionnelle.",sp:["250 pièces assorties","Acier zingué","Boîte de rangement incluse"]}
+];
+const ST={ok:"En stock",lim:"Stock limité",out:"Épuisé"};
+const ic=n=>`<svg class="i" aria-hidden="true"><use href="#${n}"/></svg>`;
+const fmt=n=>n.toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g," ")+" FCFA";
+const $=s=>document.querySelector(s);
+let cat="electromenager",prod=null,q="",sOn=false;
+
+const head=()=>`
+<div class="top">
+  <img src="logo.png" class="logo-img" id="home" alt="Accueil SOGAME EQUIP" onerror="this.style.display='none'">
+  <button class="sb" id="sb" aria-label="Rechercher">${ic("search")}</button>
+</div>
+<div class="sf ${sOn?"on":""}">${ic("search")}<input id="q" type="search" placeholder="Rechercher un produit…" value="${q.replace(/"/g,"&quot;")}" aria-label="Rechercher"></div>`;
+
+function render(){
+  // Navigation accessible : boutons tactiles, libellé et état actif explicite
+  $("#nav").innerHTML=Object.entries(CATS).map(([k,c])=>`
+    <button type="button" class="nav-item ${k===cat?"on":""}"
+      data-c="${k}" aria-label="${c.n}" aria-current="${k===cat?"page":"false"}"
+      title="${c.n}">
+      ${ic(c.i)}
+      <span class="nav-label">${c.n}</span>
+    </button>
+  `).join("");
+
+  let h=head();
+
+  if(prod){
+    const st=ST[prod.s],c=CATS[prod.c];
+    h+=`
+    <button class="back" id="back">${ic("back")} ${c.n}</button>
+    <div class="gal">${[0,1,2].map(()=>`<div class="ph">${ic(prod.i)}</div>`).join("")}</div>
+    <div class="ds">
+      <h2>${prod.n}</h2>
+      <div class="ref">Réf. ${prod.m}</div>
+      <div class="pr">${fmt(prod.p)}<small>TTC</small></div>
+      <p class="desc">${prod.d}</p>
+      <ul>${prod.sp.map(s=>`<li>${s}</li>`).join("")}</ul>
+      <div class="stat"><span>Disponibilité</span><span class="chip ${prod.s}">${st}</span></div>
+    </div>
+    <button class="cta" id="contact">${ic("phone")} Demander un devis</button>
+    <button class="cta secondary" id="back2">Continuer mes achats</button>
+    <div class="note">Un conseiller vous recontacte sous 24h ouvrées.</div>`;
+  } else {
+    const L=P.filter(x=>x.c===cat&&(x.n+" "+x.m).toLowerCase().includes(q.toLowerCase()));
+    h+=`<h1 class="t">${CATS[cat].n}</h1>`+
+      (L.length
+        ? L.map(x=>`
+          <button class="card" data-p="${x.id}">
+            <div class="ph">${ic(x.i)}</div>
+            <div class="tx">
+              <span class="n">${x.n}</span>
+              <span class="ref">Réf. ${x.m}</span>
+              <span class="pr">${fmt(x.p)}</span>
+              <span class="row">
+                <span class="chip ${x.s}">${ST[x.s]}</span>
+                <span class="more">Détails ${ic("chevron-right")}</span>
+              </span>
+            </div>
+          </button>`).join("")
+        : `<div class="empty">${ic("box")}<strong>${P.some(x=>x.c===cat)?"Aucun résultat":"Bientôt disponible"}</strong>${P.some(x=>x.c===cat)?"Aucun produit ne correspond à « "+q+" ».":"De nouveaux produits arrivent prochainement dans cette catégorie."}</div>`);
+  }
+
+  $("#app").innerHTML=h;
+
+  $("#sb").onclick=()=>{sOn=!sOn;if(!sOn){q=""}prod=null;render();if(sOn)$("#q").focus()};
+  const qi=$("#q");
+  if(qi){
+    qi.oninput=e=>{q=e.target.value;prod=null;const p=qi.selectionStart;render();const n=$("#q");n.focus();n.setSelectionRange(p,p)};
+  }
+  $("#home").onclick=()=>go("electromenager");
+  const b=$("#back");if(b)b.onclick=()=>{prod=null;render()};
+  const b2=$("#back2");if(b2)b2.onclick=()=>{prod=null;render();window.scrollTo(0,0)};
+  const cm=$("#contact");
+  if(cm)cm.onclick=()=>{
+    document.querySelector(".note").textContent="Demande envoyée. Nous vous recontacterons rapidement.";
+    cm.textContent="Demande enregistrée";
+    cm.style.background="var(--ok)";
+    cm.style.color="#fff";
+    cm.style.borderColor="var(--ok)";
+  };
+  document.querySelectorAll("[data-p]").forEach(el=>el.onclick=()=>{prod=P.find(x=>x.id==el.dataset.p);window.scrollTo(0,0);render()});
+}
+
+function go(k){cat=k;prod=null;q="";sOn=false;try{location.hash=k}catch(e){}render();window.scrollTo(0,0)}
+
+// On écoute le clic sur les .nav-item
+$("#nav").onclick=e=>{
+  const item = e.target.closest(".nav-item");
+  if(item) go(item.dataset.c);
+};
+
+addEventListener("hashchange",()=>{const k=location.hash.slice(1);if(CATS[k]&&k!==cat){cat=k;prod=null;render()}});
+
+const k0=location.hash.slice(1);if(CATS[k0])cat=k0;
+render();
+setTimeout(()=>$("#splash").classList.add("off"),1800);
+</script>
+</body>
+</html>
