@@ -191,7 +191,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--yel-hover);outl
 </svg>
 
 <div id="splash" aria-label="Chargement">
-  <svg class="splash-logo" aria-hidden="true"><use href="#sogame-logo"/></svg>
+  <img src="logo.png" class="splash-logo" alt="Chargement SOGAME EQUIP">
   <h2>Chargement</h2>
   <div class="dots"><span></span><span></span><span></span></div>
 </div>
@@ -241,7 +241,7 @@ let cat="electromenager",prod=null,q="",sOn=false;
 
 const head=()=>`
 <div class="top">
-  <svg class="logo-img" id="home" role="img" aria-label="Accueil SOGAME EQUIP"><use href="#sogame-logo"/></svg>
+  <img src="logo.png" class="logo-img" id="home" alt="Accueil SOGAME EQUIP">
   <button class="sb" id="sb" aria-label="Rechercher">${ic("search")}</button>
 </div>
 <div class="sf ${sOn?"on":""}">${ic("search")}<input id="q" type="search" placeholder="Rechercher un produit…" value="${q.replace(/"/g,"&quot;")}" aria-label="Rechercher"></div>`;
