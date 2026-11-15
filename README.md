@@ -24,6 +24,8 @@ pas besoin pour les fonctionnalités locales actuelles.
 ## Compilation
 
 - Android debug : `flutter build apk --debug`.
+- Android release universelle (ARM 32 et 64 bits, Android 5.0/API 21 minimum) :
+  `flutter build apk --release --target-platform android-arm,android-arm64`.
 - iOS : `flutter build ios` ou `flutter build ipa` sur macOS avec une version
   compatible de Xcode configurée. Le projet natif généré utilise les
   dépendances Swift Package Manager. La signature de distribution nécessite
@@ -32,6 +34,12 @@ pas besoin pour les fonctionnalités locales actuelles.
   `android/key.properties` (ignoré par Git) avec `storeFile`, `storePassword`,
   `keyAlias` et `keyPassword`. Sans ce fichier, une release n’utilise aucune
   clé de signature. Aucune clé de production n’est incluse dans le dépôt.
+  Le workflow GitHub Actions attend la même clé au moyen des secrets
+  `ANDROID_KEYSTORE_BASE64` (fichier JKS encodé en Base64),
+  `ANDROID_STORE_PASSWORD`, `ANDROID_KEY_ALIAS` et `ANDROID_KEY_PASSWORD`.
+  Les builds de pull request utilisent une APK Debug signée automatiquement ;
+  les autres builds Android produisent et vérifient la signature de l’APK
+  Release.
 
 Les visuels fournis sont dans `assets/images/`. Aucun fichier photo de produit
 n’existe dans le dépôt d’origine : les fiches conservent les pictogrammes SVG

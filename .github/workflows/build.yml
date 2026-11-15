@@ -37,14 +37,79 @@ jobs:
       - name: Check Flutter project
         run: flutter doctor -v
 
+      - name: Configure Android release signing
+        if: github.event_name != 'pull_request'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_STORE_PASSWORD" ] || [ -z "$ANDROID_KEY_ALIAS" ] || [ -z "$ANDROID_KEY_PASSWORD" ]; then
+            echo "::error::Configure ANDROID_KEYSTORE_BASE64, ANDROID_STORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD in GitHub Actions secrets."
+            exit 1
+          fi
+
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          def escape(value):
+              return value.replace("\\", "\\\\").replace(":", "\\:").replace("=", "\\=").replace("\n", "\\n").replace("\r", "\\r")
+
+          properties = {
+              "storeFile": "app/upload-keystore.jks",
+              "storePassword": os.environ["ANDROID_STORE_PASSWORD"],
+              "keyAlias": os.environ["ANDROID_KEY_ALIAS"],
+              "keyPassword": os.environ["ANDROID_KEY_PASSWORD"],
+          }
+          Path("android/key.properties").write_text(
+              "".join(f"{key}={escape(value)}\n" for key, value in properties.items()),
+              encoding="utf-8",
+          )
+          PY
+
       - name: Build release APK
-        run: flutter build apk --release
+        if: github.event_name != 'pull_request'
+        run: flutter build apk --release --target-platform android-arm,android-arm64
+
+      - name: Build pull request APK
+        if: github.event_name == 'pull_request'
+        run: flutter build apk --debug --target-platform android-arm,android-arm64
+
+      - name: Verify release APK compatibility and signature
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is not configured}}"
+          apksigner="$(find "$sdk_root/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          if [ -z "$apksigner" ]; then
+            echo "::error::Android build-tools apksigner was not found."
+            exit 1
+          fi
+
+          apk="build/app/outputs/flutter-apk/app-release.apk"
+          aapt="$(dirname "$apksigner")/aapt"
+          badging="$("$aapt" dump badging "$apk")"
+          printf '%s\n' "$badging" | grep -Fx "sdkVersion:'21'"
+          printf '%s\n' "$badging" | grep -Eq "^targetSdkVersion:'[0-9]+'$"
+
+          apk_entries="$(unzip -Z1 "$apk")"
+          for abi in armeabi-v7a arm64-v8a; do
+            if ! printf '%s\n' "$apk_entries" | grep -q "^lib/$abi/"; then
+              echo "::error::Release APK does not contain native libraries for $abi."
+              exit 1
+            fi
+          done
+
+          "$apksigner" verify --verbose "$apk"
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: sogame-equip-android-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: sogame-equip-android-${{ github.event_name == 'pull_request' && 'debug' || 'release' }}-apk
+          path: ${{ github.event_name == 'pull_request' && 'build/app/outputs/flutter-apk/app-debug.apk' || 'build/app/outputs/flutter-apk/app-release.apk' }}
           if-no-files-found: error
           retention-days: 14
 
