@@ -38,15 +38,26 @@ jobs:
         run: flutter doctor -v
 
       - name: Configure Android release signing
-        if: github.event_name != 'pull_request'
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_STORE_PASSWORD" ] || [ -z "$ANDROID_KEY_ALIAS" ] || [ -z "$ANDROID_KEY_PASSWORD" ]; then
-            echo "::error::Configure ANDROID_KEYSTORE_BASE64, ANDROID_STORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD in GitHub Actions secrets."
+          configured_secrets=0
+          for secret in "$ANDROID_KEYSTORE_BASE64" "$ANDROID_STORE_PASSWORD" "$ANDROID_KEY_ALIAS" "$ANDROID_KEY_PASSWORD"; do
+            if [ -n "$secret" ]; then
+              configured_secrets=$((configured_secrets + 1))
+            fi
+          done
+
+          if [ "$configured_secrets" -eq 0 ]; then
+            echo "No custom Android signing secrets configured; Gradle will use the debug keystore to sign the release APK."
+            exit 0
+          fi
+
+          if [ "$configured_secrets" -ne 4 ]; then
+            echo "::error::Configure all four Android signing secrets to use a production keystore, or remove all four to use debug signing."
             exit 1
           fi
 
@@ -71,15 +82,9 @@ jobs:
           PY
 
       - name: Build release APK
-        if: github.event_name != 'pull_request'
         run: flutter build apk --release --target-platform android-arm,android-arm64
 
-      - name: Build pull request APK
-        if: github.event_name == 'pull_request'
-        run: flutter build apk --debug --target-platform android-arm,android-arm64
-
       - name: Verify release APK compatibility and signature
-        if: github.event_name != 'pull_request'
         run: |
           set -euo pipefail
           sdk_root="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is not configured}}"
@@ -108,8 +113,8 @@ jobs:
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: sogame-equip-android-${{ github.event_name == 'pull_request' && 'debug' || 'release' }}-apk
-          path: ${{ github.event_name == 'pull_request' && 'build/app/outputs/flutter-apk/app-debug.apk' || 'build/app/outputs/flutter-apk/app-release.apk' }}
+          name: sogame-equip-android-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 14
 

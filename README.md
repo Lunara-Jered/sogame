@@ -32,14 +32,16 @@ pas besoin pour les fonctionnalités locales actuelles.
   un compte Apple et une identité de signature de l’équipe.
 - Pour une version Android release signée, créer une clé privée puis configurer
   `android/key.properties` (ignoré par Git) avec `storeFile`, `storePassword`,
-  `keyAlias` et `keyPassword`. Sans ce fichier, une release n’utilise aucune
-  clé de signature. Aucune clé de production n’est incluse dans le dépôt.
-  Le workflow GitHub Actions attend la même clé au moyen des secrets
+  `keyAlias` et `keyPassword`. Sans fichier de signature personnalisé, la
+  variante Release utilise la clé debug Android pour produire une APK signée
+  installable à des fins de test. Aucune clé de production n’est incluse dans
+  le dépôt.
+  Le workflow GitHub Actions utilise cette même clé de test si aucun secret de
+  signature n’est configuré. Pour utiliser ultérieurement un keystore de
+  production, configurer les quatre secrets
   `ANDROID_KEYSTORE_BASE64` (fichier JKS encodé en Base64),
   `ANDROID_STORE_PASSWORD`, `ANDROID_KEY_ALIAS` et `ANDROID_KEY_PASSWORD`.
-  Les builds de pull request utilisent une APK Debug signée automatiquement ;
-  les autres builds Android produisent et vérifient la signature de l’APK
-  Release.
+  L’APK Release ARM 32/64 bits est vérifiée avant sa publication comme artefact.
 
 Les visuels fournis sont dans `assets/images/`. Aucun fichier photo de produit
 n’existe dans le dépôt d’origine : les fiches conservent les pictogrammes SVG
