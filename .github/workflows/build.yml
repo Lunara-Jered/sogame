@@ -102,15 +102,33 @@ jobs:
         run: flutter pub get
 
       - name: Build iOS without code signing
-        run: flutter build ios --release --no-codesign
+        run: |
+          set -euo pipefail
+          flutter build ios --release --no-codesign --config-only
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/ios/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
 
       - name: Package iOS app
         run: |
           set -euo pipefail
-          APP_PATH="build/ios/iphoneos/Runner.app"
+          APP_PATH="build/ios/DerivedData/Build/Products/Release-iphoneos/Runner.app"
+          ZIP_PATH="build/ios/iphoneos/sogame-equip-ios-unsigned.zip"
           test -d "$APP_PATH"
-          cd build/ios/iphoneos
-          ditto -c -k --sequesterRsrc --keepParent Runner.app sogame-equip-ios-unsigned.zip
+          mkdir -p "$(dirname "$ZIP_PATH")"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_PATH"
+          test -s "$ZIP_PATH"
+          unzip -Z1 "$ZIP_PATH" | grep -Fxq 'Runner.app/Runner'
+          unzip -Z1 "$ZIP_PATH" | grep -Fxq 'Runner.app/Info.plist'
+          echo "Unsigned iOS app archive created and verified: $ZIP_PATH"
 
       - name: Upload iOS build
         uses: actions/upload-artifact@v4

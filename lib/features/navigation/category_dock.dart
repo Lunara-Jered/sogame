@@ -102,8 +102,10 @@ class _CategoryDockState extends State<CategoryDock>
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         final categories = ProductCategory.values;
-                        final activeIndex =
-                            categories.indexOf(widget.activeCategory);
+                        final activeCategory = widget.activeCategory;
+                        final activeIndex = activeCategory == null
+                            ? -1
+                            : categories.indexOf(activeCategory);
                         final contentWidth = constraints.maxWidth;
                         final itemWidths =
                             _itemWidths(contentWidth, activeIndex);
