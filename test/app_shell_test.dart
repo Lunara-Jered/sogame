@@ -15,10 +15,15 @@ void main() {
 
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.byType(CategoryDock), findsOneWidget);
-      expect(find.text('Nos univers'), findsOneWidget);
+      expect(find.text('NOS UNIVERS'), findsOneWidget);
+      expect(tester.getSize(find.byType(CategoryDock)).height, 64);
+      expect(
+        tester.getBottomLeft(find.byType(CategoryDock)).dy,
+        tester.getBottomLeft(find.byType(Scaffold)).dy,
+      );
 
       for (final category in ProductCategory.values) {
-        await tester.tap(find.bySemanticsLabel(category.label).first);
+        await tester.tap(find.byKey(ValueKey(category)));
         await tester.pumpAndSettle();
 
         expect(find.byType(CatalogScreen), findsOneWidget);

@@ -31,7 +31,7 @@ void main() {
       await tester.pumpAndSettle();
 
       for (final category in ProductCategory.values) {
-        await tester.tap(find.bySemanticsLabel(category.label).first);
+        await tester.tap(find.byKey(ValueKey(category)).first);
         await tester.pumpAndSettle();
 
         expect(activeCategory, category);

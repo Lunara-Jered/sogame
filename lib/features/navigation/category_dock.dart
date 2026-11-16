@@ -80,97 +80,84 @@ class _CategoryDockState extends State<CategoryDock>
 
     final itemDuration = _disableAnimations ? Duration.zero : _duration;
 
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: SizedBox(
-              width: double.infinity,
-              child: Material(
-                color: AppColors.dock,
-                elevation: 8,
-                shadowColor: const Color(0x38000000),
-                borderRadius: BorderRadius.circular(34),
-                clipBehavior: Clip.antiAlias,
-                child: SizedBox(
-                  height: _dockHeight,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final categories = ProductCategory.values;
-                        final activeCategory = widget.activeCategory;
-                        final activeIndex = activeCategory == null
-                            ? -1
-                            : categories.indexOf(activeCategory);
-                        final contentWidth = constraints.maxWidth;
-                        final itemWidths =
-                            _itemWidths(contentWidth, activeIndex);
-                        final itemRects = _itemRects(contentWidth, itemWidths);
-                        final activeRect = activeIndex < 0
-                            ? null
-                            : Rect.fromLTWH(
-                                itemRects[activeIndex].left,
-                                (_dockHeight - _pillHeight) / 2,
-                                itemRects[activeIndex].width,
-                                _pillHeight,
-                              );
+    return Container(
+      color: AppColors.dock,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: _dockHeight,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final categories = ProductCategory.values;
+                      final activeCategory = widget.activeCategory;
+                      final activeIndex = activeCategory == null
+                          ? -1
+                          : categories.indexOf(activeCategory);
+                      final contentWidth = constraints.maxWidth;
+                      final itemWidths = _itemWidths(contentWidth, activeIndex);
+                      final itemRects = _itemRects(contentWidth, itemWidths);
+                      final activeRect = activeIndex < 0
+                          ? null
+                          : Rect.fromLTWH(
+                              itemRects[activeIndex].left,
+                              (_dockHeight - _pillHeight) / 2,
+                              itemRects[activeIndex].width,
+                              _pillHeight,
+                            );
 
-                        return Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            if (activeRect != null)
-                              AnimatedBuilder(
-                                animation: _pillController,
-                                builder: (context, child) {
-                                  final rect = _pillRect(activeRect);
-                                  _currentPillRect = rect;
-                                  return Positioned.fromRect(
-                                    rect: rect,
-                                    child: child!,
-                                  );
-                                },
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: AppColors.yellow,
-                                    borderRadius: BorderRadius.circular(28),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Color(0x26000000),
-                                        blurRadius: 10,
-                                        offset: Offset(0, 3),
-                                      ),
-                                    ],
-                                  ),
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          if (activeRect != null)
+                            AnimatedBuilder(
+                              animation: _pillController,
+                              builder: (context, child) {
+                                final rect = _pillRect(activeRect);
+                                _currentPillRect = rect;
+                                return Positioned.fromRect(
+                                  rect: rect,
+                                  child: child!,
+                                );
+                              },
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: AppColors.yellow,
+                                  borderRadius: BorderRadius.circular(28),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x26000000),
+                                      blurRadius: 10,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            for (var index = 0;
-                                index < categories.length;
-                                index++)
-                              AnimatedPositioned.fromRect(
-                                key: ValueKey(categories[index]),
-                                rect: itemRects[index],
-                                duration: itemDuration,
-                                curve: Curves.easeOutCubic,
-                                child: _DockItem(
-                                  category: categories[index],
-                                  active: index == activeIndex,
-                                  reduceMotion: _disableAnimations,
-                                  labelMaxWidth: math.max(
-                                    0.0,
-                                    itemWidths[index] - 20 - 6 - 14,
-                                  ),
-                                  onTap: () =>
-                                      widget.onSelect(categories[index]),
-                                ),
+                            ),
+                          for (var index = 0;
+                              index < categories.length;
+                              index++)
+                            AnimatedPositioned.fromRect(
+                              key: ValueKey(categories[index]),
+                              rect: itemRects[index],
+                              duration: itemDuration,
+                              curve: Curves.easeOutCubic,
+                              child: _DockItem(
+                                category: categories[index],
+                                active: index == activeIndex,
+                                reduceMotion: _disableAnimations,
+                                onTap: () => widget.onSelect(categories[index]),
                               ),
-                          ],
-                        );
-                      },
-                    ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -234,8 +221,8 @@ class _CategoryDockState extends State<CategoryDock>
     final deltaX = target.center.dx - from.center.dx;
     final distance = deltaX.abs();
     final direction = deltaX.sign;
-    final stretch = math.min(8.0, distance * 0.06) *
-        math.sin(math.pi * progress);
+    final stretch =
+        math.min(8.0, distance * 0.06) * math.sin(math.pi * progress);
     return Rect.fromLTRB(
       rect.left - stretch * (direction < 0 ? .75 : .25),
       rect.top,
@@ -250,14 +237,12 @@ class _DockItem extends StatelessWidget {
     required this.category,
     required this.active,
     required this.reduceMotion,
-    required this.labelMaxWidth,
     required this.onTap,
   });
 
   final ProductCategory category;
   final bool active;
   final bool reduceMotion;
-  final double labelMaxWidth;
   final VoidCallback onTap;
 
   @override
@@ -277,26 +262,26 @@ class _DockItem extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(28),
           child: ClipRect(
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedScale(
-                    scale: active ? 1.12 : 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedScale(
+                  scale: active ? 1.12 : 1,
+                  duration: duration,
+                  curve: Curves.easeOutCubic,
+                  child: TweenAnimationBuilder<Color?>(
+                    tween: ColorTween(end: iconColor),
                     duration: duration,
-                    curve: Curves.easeOutCubic,
-                    child: TweenAnimationBuilder<Color?>(
-                      tween: ColorTween(end: iconColor),
-                      duration: duration,
-                      builder: (context, color, child) => AppIcon(
-                        category.iconKey,
-                        size: 20,
-                        color: color ?? iconColor,
-                        strokeWidth: 1.9,
-                      ),
+                    builder: (context, color, child) => AppIcon(
+                      category.iconKey,
+                      size: 20,
+                      color: color ?? iconColor,
+                      strokeWidth: 1.9,
                     ),
                   ),
-                  AnimatedSize(
+                ),
+                Flexible(
+                  child: AnimatedSize(
                     duration: duration,
                     curve: Curves.easeOutCubic,
                     alignment: Alignment.centerLeft,
@@ -318,27 +303,22 @@ class _DockItem extends StatelessWidget {
                           ? Padding(
                               key: ValueKey(category),
                               padding: const EdgeInsets.only(left: 6),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: labelMaxWidth,
-                                ),
-                                child: Text(
-                                  category.label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Color(0xFF151515),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                              child: Text(
+                                category.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Color(0xFF151515),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             )
                           : const SizedBox.shrink(key: ValueKey('inactive')),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
