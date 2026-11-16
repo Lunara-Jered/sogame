@@ -126,11 +126,13 @@ class _AppShellState extends State<AppShell> {
               constraints: const BoxConstraints(maxWidth: 480),
               child: SafeArea(
                 bottom: false,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  switchInCurve: Curves.easeOut,
-                  switchOutCurve: Curves.easeIn,
-                  child: screen,
+                child: SizedBox.expand(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    child: screen,
+                  ),
                 ),
               ),
             ),
